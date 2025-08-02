@@ -14,7 +14,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Deploy public files via FTP
+      - name: Force Re-Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -29,3 +29,6 @@ jobs:
             README.md
             LICENSE
           dangerous-clean-slate: true
+          git-ftp-args: --insecure
+          dry-run: false
+          state-name: force-new-deploy
