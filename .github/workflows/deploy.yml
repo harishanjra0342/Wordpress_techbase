@@ -14,7 +14,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Deploy via FTP
+      - name: Deploy via FTP (Force Clean Upload)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -25,3 +25,4 @@ jobs:
           exclude: |
             **/.git*
             **/.github*
+          dangerous-clean-slate: true
