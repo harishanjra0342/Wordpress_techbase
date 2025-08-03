@@ -1,4 +1,4 @@
-name: FTP Deploy
+name: SSH Deploy
 
 on:
   push:
@@ -6,29 +6,16 @@ on:
       - main
 
 jobs:
-  ftp-deploy:
-    name: Deploy to FTP
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Force Re-Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Execute SSH Commands
+        uses: appleboy/ssh-action@v0.1.6
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: ${{ secrets.FTP_PORT }}
-          server-dir: /public_html/git/
-          exclude: |
-            **/.git*
-            **/.github*
-            .cpanel.yml
-            README.md
-            LICENSE
-          dangerous-clean-slate: true
-          git-ftp-args: --insecure
-          dry-run: false
-          state-name: force-new-deploy
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd public_html/git
+            ./deploy.sh
