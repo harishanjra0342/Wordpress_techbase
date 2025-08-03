@@ -1,4 +1,4 @@
-name: SSH Deploy
+name: SSH Auto Deploy
 
 on:
   push:
@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Execute SSH Commands
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd public_html/git
-            ./deploy.sh
+            cd /home2/harishanjra/public_html/git
+            git pull origin main
