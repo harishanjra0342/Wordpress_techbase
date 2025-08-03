@@ -10,7 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Execute SSH Commands
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Execute SSH Commands on Live Server
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -18,10 +21,25 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            echo "---- Pulling Latest Code ----"
             cd /home2/harishanjra/public_html/git
             git pull origin main
+
+            echo "---- Backing Up Database ----"
+            mysqldump -u harishanjra_haris -p'Hanjra@0321' harishanjra_laravel > /home2/harishanjra/backups/db_backup_$(date +%F_%T).sql
+
+            echo "---- Installing Composer Dependencies ----"
             /usr/local/bin/ea-php82 /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader
+
+            echo "---- Running Laravel Migrations ----"
             /usr/local/bin/ea-php82 artisan migrate --force
+
+            echo "---- Caching Laravel Configurations ----"
             /usr/local/bin/ea-php82 artisan config:cache
             /usr/local/bin/ea-php82 artisan route:cache
             /usr/local/bin/ea-php82 artisan view:cache
+
+            echo "---- Deployment Complete ----"
+
+      - name: Deployment Success
+        run: echo "Deployment completed successfully!"
